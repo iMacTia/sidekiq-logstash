@@ -41,7 +41,9 @@ Or install it yourself as:
 
 ## Usage
 
-TODO: Write usage instructions here
+Simply add the following to your sidekiq configuration (in Rails, this will be `initializers/sidekiq.rb`)
+
+    Sidekiq::Logstash.setup
 
 ## Development
 
