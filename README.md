@@ -1,8 +1,27 @@
 # Sidekiq::Logstash
 
-Welcome to your new gem! In this directory, you'll find the files you need to be able to package up your Ruby library into a gem. Put your Ruby code in the file `lib/sidekiq/logstash`. To experiment with that code, run `bin/console` for an interactive prompt.
+Sidekiq::Logstash turns your [Sidekiq](https://github.com/mperham/sidekiq) log into an organised, aggregated, JSON-syntax log ready to be sent to a logstash server.
 
-TODO: Delete this and the text above, and describe your gem
+    {
+      "class"           : "MyWorker",
+      "args"            : ["first_param","second_param"],
+      "retry"           : true,
+      "queue"           : "default",
+      "jid"             : "fd71783c0afa3f5e0958f3e9",
+      "created_at"      : "2016-07-02T14:03:26.423Z",
+      "enqueued_at"     : "2016-07-02T14:03:26.425Z",
+      "started_at"      : "2016-07-02T14:03:26.953Z",
+      "retried_at"      : "2016-07-02T16:28:42.195Z",
+      "failed_at"       : "2016-07-02T13:04:58.298Z",
+      "retried_at"      : "2016-07-02T14:04:11.051Z",
+      "retry_count"     : 1,
+      "pid"             : 70354,
+      "duration"        : 0.306,
+      "error_message"   : "An error message that occurred during job execution.",
+      "error_backtrace" : "...",
+      "@timestamp"      : "2016-07-02T14:03:27.259Z",
+      "@version"        : "1"
+    }
 
 ## Installation
 
