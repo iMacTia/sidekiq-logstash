@@ -10,6 +10,7 @@ Sidekiq::Logstash turns your [Sidekiq](https://github.com/mperham/sidekiq) log i
   "args"            : ["first_param","second_param"],
   "retry"           : true,
   "queue"           : "default",
+  "status"          : "fail",
   "jid"             : "fd71783c0afa3f5e0958f3e9",
   "created_at"      : "2016-07-02T14:03:26.423Z",
   "enqueued_at"     : "2016-07-02T14:03:26.425Z",
