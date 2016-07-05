@@ -1,6 +1,6 @@
 # Sidekiq::Logstash
 
-[<img src="https://img.shields.io/badge/version-0.1.0-green.svg" alt="version" />](https://github.com/iMacTia/sidekiq-logstash) [<img src="https://travis-ci.org/iMacTia/sidekiq-logstash.svg?branch=master" alt="version" />](https://travis-ci.org/iMacTia/sidekiq-logstash)
+[<img src="https://img.shields.io/badge/version-0.1.3-green.svg" alt="version" />](https://github.com/iMacTia/sidekiq-logstash) [<img src="https://travis-ci.org/iMacTia/sidekiq-logstash.svg?branch=master" alt="version" />](https://travis-ci.org/iMacTia/sidekiq-logstash)
 
 Sidekiq::Logstash turns your [Sidekiq](https://github.com/mperham/sidekiq) log into an organised, aggregated, JSON-syntax log ready to be sent to a logstash server.
 

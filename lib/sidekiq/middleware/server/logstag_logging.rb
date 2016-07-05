@@ -32,13 +32,13 @@ module Sidekiq
           payload.merge!(@custom_options.call(payload, exc)) if @custom_options rescue nil
 
           if exc
-            payload['status'] = 'fail'
+            payload['job_status'] = 'fail'
             payload['error_message'] = exc.message
             payload['error']
             payload['error_backtrace'] = %('#{exc.backtrace.join("\n")}')
             Sidekiq.logger.warn payload
           else
-            payload['status'] = 'done'
+            payload['job_status'] = 'done'
             payload['completed_at'] = Time.now.utc
             Sidekiq.logger.info payload
           end
