@@ -50,9 +50,11 @@ $ gem install sidekiq-logstash
 ## Usage
 
 Simply add the following to your sidekiq configuration (in Rails, this will be `initializers/sidekiq.rb`)
+
 ```ruby
 Sidekiq::Logstash.setup
 ```
+
 I suggest you add it on top of it, before any other `Sidekiq.configure_server` initialization, in order to avoid unformatted logging.
 
 ## Development
