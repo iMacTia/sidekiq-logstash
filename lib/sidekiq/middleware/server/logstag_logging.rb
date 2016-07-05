@@ -31,13 +31,17 @@ module Sidekiq
           # Merge custom_options to provide customization
           payload.merge!(@custom_options.call(payload, exc)) if @custom_options rescue nil
 
+          message = "#{payload['class']} JID-#{payload['jid']}"
+
           if exc
+            payload['message'] = "#{message}: fail: #{payload['duration']} sec"
             payload['job_status'] = 'fail'
             payload['error_message'] = exc.message
             payload['error']
             payload['error_backtrace'] = %('#{exc.backtrace.join("\n")}')
             Sidekiq.logger.warn payload
           else
+            payload['message'] = "#{message}: done: #{payload['duration']} sec"
             payload['job_status'] = 'done'
             payload['completed_at'] = Time.now.utc
             Sidekiq.logger.info payload
