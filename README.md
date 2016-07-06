@@ -59,7 +59,7 @@ I suggest you add it on top of it, before any other `Sidekiq.configure_server` i
 
 ## Configuration
 
-Sidekiq::Logstash allow you to provide custom configuration
+Sidekiq::Logstash allows you to provide custom configuration
 
 ```ruby
 Sidekiq::Logstash.configure do |config|
