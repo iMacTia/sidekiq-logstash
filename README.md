@@ -14,7 +14,6 @@ Sidekiq::Logstash turns your [Sidekiq](https://github.com/mperham/sidekiq) log i
   "jid"             : "fd71783c0afa3f5e0958f3e9",
   "created_at"      : "2016-07-02T14:03:26.423Z",
   "enqueued_at"     : "2016-07-02T14:03:26.425Z",
-  "started_at"      : "2016-07-02T14:03:26.953Z",
   "retried_at"      : "2016-07-02T16:28:42.195Z",
   "failed_at"       : "2016-07-02T13:04:58.298Z",
   "retried_at"      : "2016-07-02T14:04:11.051Z",
@@ -57,6 +56,24 @@ Sidekiq::Logstash.setup
 ```
 
 I suggest you add it on top of it, before any other `Sidekiq.configure_server` initialization, in order to avoid unformatted logging.
+
+## Configuration
+
+Sidekiq::Logstash allow you to provide custom configuration
+
+```ruby
+Sidekiq::Logstash.configure do |config|
+  # filter_args will allow you to filter the job arguments removing
+  # it works just like rails params filtering (http://guides.rubyonrails.org/action_controller_overview.html#parameters-filtering)
+  config.filter_args << 'foo'
+  
+  # custom_option is a Proc that will be called before logging the payload, allowing you to add fields to it
+  # exc will be nil if no exception occurred during the job execution. you can omit it in your lambda declaration
+  config.custom_options = lambda do |payload, exc| # this can be just |payload|
+    payload['my_custom_field'] = 'my_custom_value'
+  end
+end
+```
 
 ## Development
 
