@@ -39,7 +39,7 @@ describe Sidekiq::Logstash do
         payload['test2'] = 'test2'
       end
     end
-    log_job = Sidekiq::Middleware::Server::LogstashLogging.new.log_job(job, Time.now.utc)
+    log_job = Sidekiq::Logstash.configuration.custom_options.call(job)
     expect(log_job['test']).to eq('test')
   end
 end

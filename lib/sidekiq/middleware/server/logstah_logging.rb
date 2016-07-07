@@ -46,9 +46,6 @@ module Sidekiq
             payload['completed_at'] = Time.now.utc
           end
 
-          # Merge custom_options to provide customization
-          call_custom_options(payload, exc) if custom_options rescue nil
-
           # Filter sensitive parameters
           unless filter_args.empty?
             args_filter = Sidekiq::Logging::ArgumentFilter.new(filter_args)
@@ -67,16 +64,6 @@ module Sidekiq
           timestamp.is_a?(Float) ?
               Time.at(timestamp).utc :
               Time.parse(timestamp)
-        end
-
-        def call_custom_options(payload, exc)
-          custom_options.arity == 1 ?
-              custom_options.call(payload) :
-              custom_options.call(payload, exc)
-        end
-
-        def custom_options
-          Sidekiq::Logstash.configuration.custom_options
         end
 
         def filter_args

@@ -1,6 +1,6 @@
 # Sidekiq::Logstash
 
-[<img src="https://img.shields.io/badge/version-0.2.2-green.svg" alt="version" />](https://github.com/iMacTia/sidekiq-logstash) [<img src="https://travis-ci.org/iMacTia/sidekiq-logstash.svg?branch=master" alt="version" />](https://travis-ci.org/iMacTia/sidekiq-logstash)
+[<img src="https://img.shields.io/badge/version-0.2.3-green.svg" alt="version" />](https://github.com/iMacTia/sidekiq-logstash) [<img src="https://travis-ci.org/iMacTia/sidekiq-logstash.svg?branch=master" alt="version" />](https://travis-ci.org/iMacTia/sidekiq-logstash)
 
 Sidekiq::Logstash turns your [Sidekiq](https://github.com/mperham/sidekiq) log into an organised, aggregated, JSON-syntax log ready to be sent to a logstash server.
 
@@ -68,8 +68,7 @@ Sidekiq::Logstash.configure do |config|
   config.filter_args << 'foo'
   
   # custom_option is a Proc that will be called before logging the payload, allowing you to add fields to it
-  # exc will be nil if no exception occurred during the job execution. you can omit it in your lambda declaration
-  config.custom_options = lambda do |payload, exc| # this can be just |payload|
+  config.custom_options = lambda do |payload|
     payload['my_custom_field'] = 'my_custom_value'
   end
 end
