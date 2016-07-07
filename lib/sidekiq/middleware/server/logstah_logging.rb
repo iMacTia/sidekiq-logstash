@@ -47,7 +47,7 @@ module Sidekiq
           end
 
           # Merge custom_options to provide customization
-          payload.merge!(call_custom_options(payload, exc)) if custom_options rescue nil
+          call_custom_options(payload, exc) if custom_options rescue nil
 
           # Filter sensitive parameters
           unless filter_args.empty?

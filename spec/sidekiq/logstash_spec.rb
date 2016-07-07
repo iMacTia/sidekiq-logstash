@@ -36,6 +36,7 @@ describe Sidekiq::Logstash do
     Sidekiq::Logstash.configure do |config|
       config.custom_options = lambda do |payload|
         payload['test'] = 'test'
+        payload['test2'] = 'test2'
       end
     end
     log_job = Sidekiq::Middleware::Server::LogstashLogging.new.log_job(job, Time.now.utc)
