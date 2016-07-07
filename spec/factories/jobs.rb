@@ -1,6 +1,7 @@
 FactoryGirl.define do
   factory :job, class: Hash do
     args [
+      'just a simple string',
       {
         object_name: 'stars',
         object_id: Kernel.rand(10000),
