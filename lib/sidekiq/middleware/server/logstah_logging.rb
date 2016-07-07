@@ -5,10 +5,10 @@ module Sidekiq
         def call(_, job, _)
           started_at = Time.now.utc
           yield
-          log_job(job, started_at)
+          Sidekiq.logger.info log_job(job, started_at)
         rescue => exc
           begin
-            log_job(job, started_at, exc)
+            Sidekiq.logger.warn log_job(job, started_at, exc)
           rescue => ex
             Sidekiq.logger.error 'Error logging the job execution!'
             Sidekiq.logger.error "Job: #{job}"
@@ -55,7 +55,7 @@ module Sidekiq
             payload['args'].map! { |arg| args_filter.filter(arg) }
           end
 
-          exc ? Sidekiq.logger.warn(payload) : Sidekiq.logger.info(payload)
+          payload
         end
 
         def elapsed(start)

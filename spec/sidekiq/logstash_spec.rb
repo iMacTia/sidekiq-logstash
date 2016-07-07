@@ -6,6 +6,8 @@ describe Sidekiq::Logstash do
     Sidekiq.logger = double(Logger.new(STDOUT))
   end
 
+  let (:job) { FactoryGirl.build(:job) }
+
   it 'has a version number' do
     expect(Sidekiq::Logstash::VERSION).not_to be nil
   end
@@ -20,5 +22,23 @@ describe Sidekiq::Logstash do
     Sidekiq::Testing.inline! do
       SpecWorker.perform_async
     end
+  end
+
+  it 'filter args' do
+    Sidekiq::Logstash.configure do |config|
+      config.filter_args << 'a_secret_param'
+    end
+    log_job = Sidekiq::Middleware::Server::LogstashLogging.new.log_job(job, Time.now.utc)
+    expect(log_job['args'][1]['a_secret_param']).to eq('[FILTERED]')
+  end
+
+  it 'add custom options' do
+    Sidekiq::Logstash.configure do |config|
+      config.custom_options = lambda do |payload|
+        payload['test'] = 'test'
+      end
+    end
+    log_job = Sidekiq::Middleware::Server::LogstashLogging.new.log_job(job, Time.now.utc)
+    expect(log_job['test']).to eq('test')
   end
 end
