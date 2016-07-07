@@ -52,7 +52,7 @@ module Sidekiq
           # Filter sensitive parameters
           unless filter_args.empty?
             args_filter = Sidekiq::Logging::ArgumentFilter.new(filter_args)
-            payload['args'].map { |arg| args_filter.filter(arg) }
+            payload['args'].map! { |arg| args_filter.filter(arg) }
           end
 
           exc ? Sidekiq.logger.warn(payload) : Sidekiq.logger.info(payload)
