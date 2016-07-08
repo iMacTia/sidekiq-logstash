@@ -52,6 +52,9 @@ module Sidekiq
             payload['args'] = args_filter.filter({ args: payload['args'] })[:args]
           end
 
+          # Needs to map all args to strings for ElasticSearch compatibility
+          payload['args'].map!(&:to_s)
+
           payload
         end
 

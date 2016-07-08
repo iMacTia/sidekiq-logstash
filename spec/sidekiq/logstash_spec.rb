@@ -29,7 +29,7 @@ describe Sidekiq::Logstash do
       config.filter_args << 'a_secret_param'
     end
     log_job = Sidekiq::Middleware::Server::LogstashLogging.new.log_job(job, Time.now.utc)
-    expect(log_job['args'][2]['a_secret_param']).to eq('[FILTERED]')
+    expect(log_job['args'][2]).to include('[FILTERED]')
   end
 
   it 'add custom options' do
