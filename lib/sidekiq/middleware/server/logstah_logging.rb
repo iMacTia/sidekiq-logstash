@@ -67,6 +67,8 @@ module Sidekiq
           timestamp.is_a?(Float) ?
               Time.at(timestamp).utc :
               Time.parse(timestamp)
+        rescue
+          timestamp
         end
 
         def filter_args
