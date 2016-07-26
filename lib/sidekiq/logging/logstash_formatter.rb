@@ -1,3 +1,5 @@
+require 'logstash-event'
+
 module Sidekiq
   module Logging
     class LogstashFormatter
