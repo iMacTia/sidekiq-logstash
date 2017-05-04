@@ -14,6 +14,7 @@ Gem::Specification.new do |spec|
 Sidekiq::Logstash turns your Sidekiq log into an organised, aggregated, JSON-syntax log ready to be sent to a logstash server.
 DESC
   spec.homepage      = 'https://github.com/iMacTia/sidekiq-logstash'
+  spec.license       = 'MIT'
 
   spec.files         = `git ls-files -z`.split("\x0").reject { |f| f.match(%r{^(test|spec|features)/}) }
   spec.bindir        = 'exe'
