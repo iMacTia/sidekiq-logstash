@@ -26,12 +26,12 @@ module Sidekiq
           strings, regexps, blocks = [], [], []
           filters.each do |item|
             case item
-              when Proc
-                blocks << item
-              when Regexp
-                regexps << item
-              else
-                strings << Regexp.escape(item.to_s)
+            when Proc
+              blocks << item
+            when Regexp
+              regexps << item
+            else
+              strings << Regexp.escape(item.to_s)
             end
           end
           deep_regexps, regexps = regexps.partition { |r| r.to_s.include?("\\.".freeze) }
@@ -44,9 +44,9 @@ module Sidekiq
         attr_reader :regexps, :deep_regexps, :blocks
 
         def initialize(regexps, deep_regexps, blocks)
-          @regexps = regexps
+          @regexps      = regexps
           @deep_regexps = deep_regexps.any? ? deep_regexps : nil
-          @blocks  = blocks
+          @blocks       = blocks
         end
 
         def call(original_args, parents = [])

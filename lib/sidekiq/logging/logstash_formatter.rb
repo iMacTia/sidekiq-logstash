@@ -9,7 +9,7 @@ module Sidekiq
         else
           json_data = {
               severity: severity,
-              message: data
+              message:  data
           }
         end
 
