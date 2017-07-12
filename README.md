@@ -2,6 +2,7 @@
 
 [![Gem Version](https://badge.fury.io/rb/sidekiq-logstash.svg)](https://badge.fury.io/rb/sidekiq-logstash) [<img src="https://travis-ci.org/iMacTia/sidekiq-logstash.svg?branch=master" alt="version" />](https://travis-ci.org/iMacTia/sidekiq-logstash)
 
+
 Sidekiq::Logstash turns your [Sidekiq](https://github.com/mperham/sidekiq) log into an organised, aggregated, JSON-syntax log ready to be sent to a logstash server.
 
 ```json
