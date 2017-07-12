@@ -3,6 +3,7 @@ require 'sidekiq/logstash/version'
 require 'sidekiq/middleware/server/logstah_logging'
 require 'sidekiq/logging/logstash_formatter'
 require 'sidekiq/logging/argument_filter'
+require 'sidekiq/logstash_job_logger'
 
 module Sidekiq
   module Logstash
@@ -18,12 +19,17 @@ module Sidekiq
       # Calls Sidekiq.configure_server to inject logics
       Sidekiq.configure_server do |config|
         # Remove default Sidekiq error_handler that logs errors
-        config.error_handlers.delete_if {|h| h.is_a?(Sidekiq::ExceptionHandler::Logger) }
+        config.error_handlers.delete_if { |h| h.is_a?(Sidekiq::ExceptionHandler::Logger) }
 
         # Add logstash support
-        config.server_middleware do |chain|
-          chain.add Sidekiq::Middleware::Server::LogstashLogging
-          chain.remove Sidekiq::Middleware::Server::Logging
+        # The logging server middleware was removed in Sidekiq 5.0.0, see: https://github.com/mperham/sidekiq/blob/master/Changes.md
+        if Sidekiq::Middleware::Server.const_defined?(:Logging)
+          config.server_middleware do |chain|
+            chain.add Sidekiq::Middleware::Server::LogstashLogging
+            chain.remove Sidekiq::Middleware::Server::Logging
+          end
+        else
+          Sidekiq.options[:job_logger] = Sidekiq::LogstashJobLogger
         end
 
         # Set custom formatter for Sidekiq logger
