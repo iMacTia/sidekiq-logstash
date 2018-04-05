@@ -37,6 +37,7 @@ module Sidekiq
 
         # Needs to map all args to strings for ElasticSearch compatibility
         payload['args'].map!(&:to_s)
+        payload['retry'] = payload['retry'].to_s
 
         payload
       end
