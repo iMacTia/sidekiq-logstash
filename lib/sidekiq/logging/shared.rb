@@ -37,7 +37,11 @@ module Sidekiq
 
         # Needs to map all args to strings for ElasticSearch compatibility
         payload['args'].map!(&:to_s)
-        payload['retry'] = payload['retry'].to_s
+
+        if payload['retry'].is_a?(Integer)
+          payload['max_retries'] = payload['retry']
+          payload['retry'] = true
+        end
 
         payload
       end
