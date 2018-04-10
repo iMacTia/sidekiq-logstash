@@ -38,6 +38,9 @@ module Sidekiq
         # Needs to map all args to strings for ElasticSearch compatibility
         payload['args'].map!(&:to_s)
 
+        # Needs to map all unique_args to strings for ElasticSearch compatibility in case sidekiq-unique-jobs is used
+        payload['unique_args'].map!(&:to_s) if payload['unique_args']
+
         payload
       end
 
