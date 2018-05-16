@@ -36,7 +36,7 @@ module Sidekiq
         end
 
         # Needs to map all args to strings for ElasticSearch compatibility
-        payload['args'].map!(&:to_s)
+        payload['args'].map!(&:to_s) if payload['args'].respond_to?(:map!)
 
         payload
       end
