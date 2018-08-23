@@ -41,6 +41,11 @@ module Sidekiq
         # Needs to map all unique_args to strings for ElasticSearch compatibility in case sidekiq-unique-jobs is used
         payload['unique_args'].map!(&:to_s) if payload['unique_args']
 
+        if payload['retry'].is_a?(Integer)
+          payload['max_retries'] = payload['retry']
+          payload['retry'] = true
+        end
+
         payload
       end
 
