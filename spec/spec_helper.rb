@@ -7,5 +7,7 @@ require 'sidekiq'
 require 'sidekiq/cli' # needed to simulate being in Sidekiq server
 require 'sidekiq/testing'
 require 'rspec'
+require 'forwardable' # needed by rspec-json_expectations
+require 'rspec/json_expectations'
 require 'factory_girl'
 require 'support/factory_girl'
