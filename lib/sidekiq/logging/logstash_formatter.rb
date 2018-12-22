@@ -4,13 +4,12 @@ module Sidekiq
   module Logging
     class LogstashFormatter
       def call(severity, time, progname, data)
+        json_data = { severity: severity }
+
         if data.is_a? Hash
-          json_data = data
+          json_data.merge!(data)
         else
-          json_data = {
-              severity: severity,
-              message:  data
-          }
+          json_data[:message] = data
         end
 
         # Merge custom_options to provide customization
