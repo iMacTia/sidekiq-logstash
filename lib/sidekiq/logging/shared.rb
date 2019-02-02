@@ -1,6 +1,8 @@
 module Sidekiq
   module Logging
     module Shared
+      ENCRYPTED = '[ENCRYPTED]'.freeze
+
       def log_job(payload, started_at, exc = nil)
         # Create a copy of the payload using JSON
         # This should always be possible since Sidekiq store it in Redis
@@ -33,6 +35,11 @@ module Sidekiq
         unless filter_args.empty?
           args_filter     = Sidekiq::Logging::ArgumentFilter.new(filter_args)
           payload['args'] = args_filter.filter({ args: payload['args'] })[:args]
+        end
+
+        # If encrypt is true, the last arg is encrypted so hide it
+        if payload['encrypt']
+          payload['args'][-1] = ENCRYPTED
         end
 
         # Needs to map all args to strings for ElasticSearch compatibility

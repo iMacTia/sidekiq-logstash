@@ -42,4 +42,13 @@ describe Sidekiq::Logstash do
     log_job = Sidekiq::Logstash.configuration.custom_options.call(job)
     expect(log_job['test']).to eq('test')
   end
+
+  context 'when a job has encrypted arguments' do
+    let (:job) { FactoryGirl.build(:job, encrypt: true) }
+
+    it 'hides encrypted args' do
+      log_job = Sidekiq::Middleware::Server::LogstashLogging.new.log_job(job, Time.now.utc)
+      expect(log_job['args'][2]).to include('[ENCRYPTED]')
+    end
+  end
 end
