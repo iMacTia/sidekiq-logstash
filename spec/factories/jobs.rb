@@ -18,7 +18,13 @@ FactoryGirl.define do
     queue 'default'
     jid '0afe8ddfcba21525022ce638'
     enqueued_at '2016-07-06T18:18:25.499Z'
+    encrypt false
 
     initialize_with {attributes.stringify_keys}
+    after(:build) do |job|
+      if job['encrypt']
+        job['args'][-1] = 'BAhTOhFTaWRla2lxOjpFbmMIOgdpdiIVo1mbHmnVxiOIT'
+      end
+    end
   end
 end
