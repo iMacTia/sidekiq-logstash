@@ -6,6 +6,10 @@ module Sidekiq
 
     def call(job, _queue)
       started_at = Time.now.utc
+      if Sidekiq::Logstash.configuration.job_start_log
+        payload = log_job(job, started_at, nil, true)
+        Sidekiq.logger.info payload if payload
+      end
       yield
       Sidekiq.logger.info log_job(job, started_at)
     rescue => exc
