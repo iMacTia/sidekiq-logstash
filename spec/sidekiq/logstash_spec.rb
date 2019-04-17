@@ -24,6 +24,16 @@ describe Sidekiq::Logstash do
     end
   end
 
+  it 'logs only a single line (doesn\'t have a "started" log by default)' do
+    buffer = StringIO.new
+    Sidekiq.logger = Logger.new(buffer)
+
+    log_job = Sidekiq::LogstashJobLogger.new.call(job, :default) {}
+
+    expect(buffer.string.split("\n").length).to eq(1)
+    expect(buffer.string).not_to include('"job_status"=>"started"')
+  end
+
   it 'filter args' do
     Sidekiq::Logstash.configure do |config|
       config.filter_args << 'a_secret_param'
@@ -49,6 +59,36 @@ describe Sidekiq::Logstash do
     it 'hides encrypted args' do
       log_job = Sidekiq::Middleware::Server::LogstashLogging.new.log_job(job, Time.now.utc)
       expect(log_job['args'][2]).to include('[ENCRYPTED]')
+    end
+  end
+
+  context 'enable job_start_log' do
+    it 'generates log with job_status=started' do
+      buffer = StringIO.new
+      Sidekiq.logger = Logger.new(buffer)
+
+      Sidekiq::Logstash.configure do |config|
+        config.job_start_log = true
+      end
+
+      log_job = Sidekiq::Middleware::Server::LogstashLogging.new.log_job(job, Time.now.utc, exc = nil, start = true)
+
+      expect(log_job['job_status']).to eq('started')
+    end
+
+    it 'logs both the starting and finished logs' do
+      buffer = StringIO.new
+      Sidekiq.logger = Logger.new(buffer)
+
+      Sidekiq::Logstash.configure do |config|
+        config.job_start_log = true
+      end
+
+      log_job = Sidekiq::LogstashJobLogger.new.call(job, :default) {}
+
+      expect(buffer.string.split("\n").length).to eq(2)
+      expect(buffer.string).to include('"job_status"=>"started"')
+      expect(buffer.string).to include('"job_status"=>"done"')
     end
   end
 end

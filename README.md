@@ -68,6 +68,11 @@ Sidekiq::Logstash.configure do |config|
   # it works just like rails params filtering (http://guides.rubyonrails.org/action_controller_overview.html#parameters-filtering)
   config.filter_args << 'foo'
   
+  # by default, the "job started" logs are omitted from the logs
+  # to have one-line logs for each log (following Lograge), but you can
+  # enable job start logs by setting the following flag:
+  config.job_start_log = true
+  
   # custom_option is a Proc that will be called before logging the payload, allowing you to add fields to it
   config.custom_options = lambda do |payload|
     payload['my_custom_field'] = 'my_custom_value'

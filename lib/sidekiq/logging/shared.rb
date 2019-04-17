@@ -3,7 +3,10 @@ module Sidekiq
     module Shared
       ENCRYPTED = '[ENCRYPTED]'.freeze
 
-      def log_job(payload, started_at, exc = nil)
+      def log_job(payload, started_at, exc = nil, start = false)
+        # skip start logs for retrying jobs
+        return if start && payload['failed_at']
+
         # Create a copy of the payload using JSON
         # This should always be possible since Sidekiq store it in Redis
         payload = JSON.parse(JSON.unparse(payload))
@@ -13,22 +16,28 @@ module Sidekiq
           payload[key] = parse_time(payload[key]) if payload[key]
         end
 
-        # Add process id params
-        payload['pid']      = ::Process.pid
-        payload['duration'] = elapsed(started_at)
-
         message = "#{payload['class']} JID-#{payload['jid']}"
 
-        if exc
-          payload['message']         = "#{message}: fail: #{payload['duration']} sec"
-          payload['job_status']      = 'fail'
-          payload['error_message']   = exc.message
-          payload['error']           = exc.class
-          payload['error_backtrace'] = %('#{exc.backtrace.join("\n")}')
+        # Add process id params
+        payload['pid']      = ::Process.pid
+
+        if start
+          payload['job_status'] = 'started'
+          payload['message'] = "#{message}: started"
         else
-          payload['message']      = "#{message}: done: #{payload['duration']} sec"
-          payload['job_status']   = 'done'
-          payload['completed_at'] = Time.now.utc
+          payload['duration'] = elapsed(started_at)
+
+          if exc
+            payload['message']         = "#{message}: fail: #{payload['duration']} sec"
+            payload['job_status']      = 'fail'
+            payload['error_message']   = exc.message
+            payload['error']           = exc.class
+            payload['error_backtrace'] = %('#{exc.backtrace.join("\n")}')
+          else
+            payload['message']      = "#{message}: done: #{payload['duration']} sec"
+            payload['job_status']   = 'done'
+            payload['completed_at'] = Time.now.utc
+          end
         end
 
         # Filter sensitive parameters
