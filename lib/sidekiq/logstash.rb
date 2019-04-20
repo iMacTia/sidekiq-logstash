@@ -8,6 +8,9 @@ require 'sidekiq/logging/argument_filter'
 require 'sidekiq/logstash_job_logger'
 
 module Sidekiq
+  # Main level module for Sidekiq::Logstash.
+  # Provides integration between Sidekiq and Logstash by changing the way
+  # Sidekiq jobs are logged.
   module Logstash
     def self.configuration
       @configuration ||= Configuration.new

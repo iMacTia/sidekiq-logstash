@@ -2,6 +2,7 @@
 
 module Sidekiq
   module Logstash
+    # Class that allows to configure the gem behaviour.
     class Configuration
       attr_accessor :custom_options, :filter_args, :job_start_log
 

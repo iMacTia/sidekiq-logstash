@@ -4,13 +4,17 @@
 # Adding actionpack to the gem dependencies would have been too heavy, so here is just what we need.
 module Sidekiq
   module Logging
+    # Class that allows to filter-out sensible arguments.
     class ArgumentFilter
+      # String used to replace sensible arguments.
       FILTERED = '[FILTERED]'
 
       def initialize(filters = [])
         @filters = filters
       end
 
+      # Filters argument by using the filters provided upon initialization.
+      # @param args [Array] the list of arguments.
       def filter(args)
         compiled_filter.call(args)
       end

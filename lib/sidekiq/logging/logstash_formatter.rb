@@ -4,6 +4,7 @@ require 'logstash-event'
 
 module Sidekiq
   module Logging
+    # Class that takes a log payload and format it to be Logstash-compatible.
     class LogstashFormatter
       def call(severity, _time, _progname, data)
         json_data = { severity: severity }
@@ -24,6 +25,8 @@ module Sidekiq
 
         "#{event.to_json}\n"
       end
+
+      private
 
       def custom_options
         Sidekiq::Logstash.configuration.custom_options

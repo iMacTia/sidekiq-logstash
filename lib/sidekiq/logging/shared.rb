@@ -2,6 +2,7 @@
 
 module Sidekiq
   module Logging
+    # Shared module with all the logics used by job loggers.
     module Shared
       ENCRYPTED = '[ENCRYPTED]'
 

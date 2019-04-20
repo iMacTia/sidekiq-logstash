@@ -3,6 +3,7 @@
 require 'sidekiq/logging/shared'
 
 module Sidekiq
+  # Class used to replace Sidekiq 5 job logger.
   class LogstashJobLogger
     include Sidekiq::Logging::Shared
 
