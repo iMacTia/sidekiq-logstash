@@ -24,9 +24,7 @@ FactoryGirl.define do
 
     initialize_with { attributes.stringify_keys }
     after(:build) do |job|
-      if job['encrypt']
-        job['args'][-1] = 'BAhTOhFTaWRla2lxOjpFbmMIOgdpdiIVo1mbHmnVxiOIT'
-      end
+      job['args'][-1] = 'BAhTOhFTaWRla2lxOjpFbmMIOgdpdiIVo1mbHmnVxiOIT' if job['encrypt']
     end
   end
 end

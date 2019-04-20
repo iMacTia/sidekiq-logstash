@@ -2,7 +2,6 @@
 
 # This implementation is taken directly from https://github.com/rails/rails/blob/52ce6ece8c8f74064bb64e0a0b1ddd83092718e1/actionpack/lib/action_dispatch/http/parameter_filter.rb
 # Adding actionpack to the gem dependencies would have been too heavy, so here is just what we need.
-
 module Sidekiq
   module Logging
     class ArgumentFilter
