@@ -1,8 +1,9 @@
 language: ruby
 rvm:
-- 2.2.2
-- 2.3.0
-- 2.4.0
+- 2.3
+- 2.4
+- 2.5
+- 2.6
 before_install: gem install bundler -v 1.11.2
 gemfile:
 - gemfiles/sidekiq3.gemfile
@@ -16,5 +17,5 @@ deploy:
   on:
     tags: true
     repo: iMacTia/sidekiq-logstash
-    rvm: 2.4.0
+    rvm: 2.6
 
