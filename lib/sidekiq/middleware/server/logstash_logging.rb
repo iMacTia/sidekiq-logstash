@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'sidekiq/logging/shared'
 
 module Sidekiq
@@ -10,10 +12,10 @@ module Sidekiq
           started_at = Time.now.utc
           yield
           Sidekiq.logger.info log_job(job, started_at)
-        rescue => exc
+        rescue StandardError => exc
           begin
             Sidekiq.logger.warn log_job(job, started_at, exc)
-          rescue => ex
+          rescue StandardError => ex
             Sidekiq.logger.error 'Error logging the job execution!'
             Sidekiq.logger.error "Job: #{job}"
             Sidekiq.logger.error "Job Exception: #{exc}"

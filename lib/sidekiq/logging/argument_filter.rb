@@ -1,10 +1,12 @@
+# frozen_string_literal: true
+
 # This implementation is taken directly from https://github.com/rails/rails/blob/52ce6ece8c8f74064bb64e0a0b1ddd83092718e1/actionpack/lib/action_dispatch/http/parameter_filter.rb
 # Adding actionpack to the gem dependencies would have been too heavy, so here is just what we need.
 
 module Sidekiq
   module Logging
     class ArgumentFilter
-      FILTERED = '[FILTERED]'.freeze
+      FILTERED = '[FILTERED]'
 
       def initialize(filters = [])
         @filters = filters
@@ -22,8 +24,11 @@ module Sidekiq
 
       class CompiledFilter # :nodoc:
         def self.compile(filters)
-          return lambda { |args| args.dup } if filters.empty?
-          strings, regexps, blocks = [], [], []
+          return ->(args) { args.dup } if filters.empty?
+
+          strings = []
+          regexps = []
+          blocks = []
           filters.each do |item|
             case item
             when Proc
@@ -34,10 +39,10 @@ module Sidekiq
               strings << Regexp.escape(item.to_s)
             end
           end
-          deep_regexps, regexps = regexps.partition { |r| r.to_s.include?("\\.".freeze) }
-          deep_strings, strings = strings.partition { |s| s.include?("\\.".freeze) }
-          regexps << Regexp.new(strings.join('|'.freeze), true) unless strings.empty?
-          deep_regexps << Regexp.new(deep_strings.join('|'.freeze), true) unless deep_strings.empty?
+          deep_regexps, regexps = regexps.partition { |r| r.to_s.include?('\\.') }
+          deep_strings, strings = strings.partition { |s| s.include?('\\.') }
+          regexps << Regexp.new(strings.join('|'), true) unless strings.empty?
+          deep_regexps << Regexp.new(deep_strings.join('|'), true) unless deep_strings.empty?
           new regexps, deep_regexps, blocks
         end
 
@@ -62,8 +67,16 @@ module Sidekiq
             elsif value.is_a?(Array)
               value = value.map { |v| v.is_a?(Hash) ? call(v, parents) : v }
             elsif blocks.any?
-              key = key.dup rescue key
-              value = value.dup rescue value
+              key = begin
+                      key.dup
+                    rescue StandardError
+                      key
+                    end
+              value = begin
+                        value.dup
+                      rescue StandardError
+                        value
+                      end
               blocks.each { |b| b.call(key, value) }
             end
             parents.pop if deep_regexps

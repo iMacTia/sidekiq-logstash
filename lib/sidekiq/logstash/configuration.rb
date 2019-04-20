@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Sidekiq
   module Logstash
     class Configuration
@@ -11,6 +13,7 @@ module Sidekiq
       # Added to ensure custom_options is a Proc
       def custom_options=(proc)
         raise ArgumentError, 'Argument must be a Proc.' unless proc.is_a?(Proc)
+
         @custom_options = proc
       end
     end

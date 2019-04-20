@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'sidekiq/logstash/configuration'
 require 'sidekiq/logstash/version'
 require 'sidekiq/middleware/server/logstash_logging'
@@ -15,7 +17,7 @@ module Sidekiq
       yield(configuration)
     end
 
-    def self.setup(opts = {})
+    def self.setup(_opts = {})
       # Calls Sidekiq.configure_server to inject logics
       Sidekiq.configure_server do |config|
         # Remove default Sidekiq error_handler that logs errors
