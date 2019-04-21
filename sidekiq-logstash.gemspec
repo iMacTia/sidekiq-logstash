@@ -25,7 +25,7 @@ Gem::Specification.new do |spec|
   spec.add_dependency 'logstash-event', '~> 1.2'
   spec.add_runtime_dependency 'sidekiq', '>= 3.0', '<6'
 
-  spec.add_development_dependency 'bundler', '~> 1.11'
+  spec.add_development_dependency 'bundler', '< 2'
   spec.add_development_dependency 'factory_girl', '~> 4.0'
   spec.add_development_dependency 'rake', '~> 10.0'
   spec.add_development_dependency 'rspec', '~> 3.0'
