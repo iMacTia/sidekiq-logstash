@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'spec_helper'
 require 'sidekiq/logging/logstash_formatter'
 
@@ -14,8 +16,8 @@ describe Sidekiq::Logging::LogstashFormatter do
 
   it 'preserves severity of given hash' do
     data = {
-        severity: 'WARN',
-        message: 'the message',
+      severity: 'WARN',
+      message: 'the message'
     }
 
     json = logstash_formatter.call('INFO', Time.now, 'progname', data)
