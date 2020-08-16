@@ -3,7 +3,7 @@
 class SpecWorker
   include Sidekiq::Worker
 
-  def perform(fail = false)
+  def perform(fail = false, params = {})
     raise RuntimeError if fail
   end
 end

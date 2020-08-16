@@ -34,7 +34,7 @@ module Sidekiq
             chain.remove Sidekiq::Middleware::Server::Logging
           end
         else
-          Sidekiq.options[:job_logger] = Sidekiq::LogstashJobLogger
+          config.options[:job_logger] = Sidekiq::LogstashJobLogger
         end
 
         # Set custom formatter for Sidekiq logger

@@ -4,10 +4,26 @@ require 'spec_helper'
 require 'workers/spec_worker'
 
 describe Sidekiq::Logstash do
-  let(:buffer) { StringIO.new }
-  let(:job) { FactoryGirl.build(:job) }
+  def process(worker, params = [], encrypt: false)
+    msg = Sidekiq.dump_json({ 'class' => worker.to_s, 'args' => params, 'encrypt' => encrypt })
+    work = Sidekiq::BasicFetch::UnitOfWork.new('queue:default', msg)
+    processor.send(:process, work)
+  end
 
-  before { Sidekiq.logger = Logger.new(buffer) }
+  let(:buffer) { StringIO.new }
+  let(:logger) { Logger.new(buffer) }
+  let(:job) { build(:job) }
+  let(:processor_options) { { queues: ['default'] } }
+  let(:processor) { ::Sidekiq::Processor.new(nil, processor_options) }
+  let(:log_message) { JSON.parse(buffer.string) }
+  let(:log_messages) { buffer.string.split("\n").map { |log| JSON.parse(log) } }
+
+  before do
+    logger.formatter = Sidekiq::Logging::LogstashFormatter.new
+    Sidekiq.logger = logger
+    processor_options[:job_logger] = Sidekiq::LogstashJobLogger
+    processor_options[:fetch] = ::Sidekiq::BasicFetch.new(processor_options)
+  end
 
   it 'has a version number' do
     expect(Sidekiq::Logstash::VERSION).not_to be nil
@@ -19,54 +35,67 @@ describe Sidekiq::Logstash do
   end
 
   it 'logs properly' do
-    expect(Sidekiq.logger).to receive(:info)
-    Sidekiq::Testing.inline! do
-      SpecWorker.perform_async
-    end
+    process(SpecWorker)
+    expect(buffer.string).to include('@timestamp')
   end
 
   it 'logs only a single line (doesn\'t have a "started" log by default)' do
-    buffer = StringIO.new
-    Sidekiq.logger = Logger.new(buffer)
-
-    Sidekiq::LogstashJobLogger.new.call(job, :default) {}
-
+    process(SpecWorker)
     expect(buffer.string.split("\n").length).to eq(1)
-    expect(buffer.string).not_to include('"job_status"=>"started"')
+    expect(buffer.string).not_to include('started')
   end
 
-  it 'filter args' do
-    Sidekiq::Logstash.configure do |config|
-      config.filter_args << 'a_secret_param'
-    end
-    Sidekiq::LogstashJobLogger.new.log_job(job)
-    expect(buffer.string).to include('[FILTERED]')
-  end
-
-  it 'add custom options' do
-    Sidekiq::Logstash.configure do |config|
-      config.custom_options = lambda do |payload|
-        payload['test'] = 'test'
-        payload['test2'] = 'test2'
+  context 'with arguments filtered' do
+    before do
+      Sidekiq::Logstash.configure do |config|
+        config.filter_args << 'a_secret_param'
       end
     end
-    log_job = Sidekiq::Logstash.configuration.custom_options.call(job)
-    expect(log_job['test']).to eq('test')
+
+    after do
+      Sidekiq::Logstash.configure do |config|
+        config.filter_args.clear
+      end
+    end
+
+    it 'filter args' do
+      process(SpecWorker, [false, { 'a_secret_param' => 'secret' }])
+      expect(log_message['args'].last).to include('[FILTERED]')
+    end
+  end
+
+  context 'with custom options' do
+    before do
+      Sidekiq::Logstash.configure do |config|
+        config.custom_options = lambda do |payload|
+          payload['test'] = 'test'
+          payload['test2'] = 'test2'
+        end
+      end
+    end
+
+    after do
+      Sidekiq::Logstash.configure do |config|
+        config.custom_options = proc {}
+      end
+    end
+
+    it 'add custom options' do
+      process(SpecWorker)
+      expect(log_message['test']).to eq('test')
+      expect(log_message['test2']).to eq('test2')
+    end
   end
 
   context 'when a job has encrypted arguments' do
-    let(:job) { FactoryGirl.build(:job, encrypt: true) }
-
     it 'hides encrypted args' do
-      Sidekiq::LogstashJobLogger.new.log_job(job)
+      process(SpecWorker, [false, 'encrypted_param'], encrypt: true)
       expect(buffer.string).to include('[ENCRYPTED]')
     end
   end
 
-  context 'enable job_start_log' do
+  context 'with job_start_log enabled' do
     before do
-      Sidekiq.logger = Logger.new(buffer)
-
       Sidekiq::Logstash.configure do |config|
         config.job_start_log = true
       end
@@ -78,18 +107,11 @@ describe Sidekiq::Logstash do
       end
     end
 
-    it 'generates log with job_status=started' do
-      log_job = Sidekiq::LogstashJobLogger.new.log_job_start(job)
-
-      expect(log_job['job_status']).to eq('started')
-    end
-
     it 'logs both the starting and finished logs' do
-      Sidekiq::LogstashJobLogger.new.call(job, :default) {}
-
-      expect(buffer.string.split("\n").length).to eq(2)
-      expect(buffer.string).to include('"job_status"=>"started"')
-      expect(buffer.string).to include('"job_status"=>"done"')
+      process(SpecWorker)
+      expect(log_messages.length).to eq(2)
+      expect(log_messages.first['job_status']).to eq('started')
+      expect(log_messages.last['job_status']).to eq('done')
     end
   end
 end
