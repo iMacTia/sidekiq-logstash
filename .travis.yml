@@ -1,18 +1,12 @@
 language: ruby
 cache: bundler
 rvm:
-- 2.4
 - 2.5
 - 2.6
 - 2.7
 before_install:
   - gem uninstall -v '>= 2' -i $(rvm gemdir)@global -ax bundler || true
   - gem install bundler -v '~> 1.17'
-gemfile:
-- gemfiles/sidekiq3.gemfile
-- gemfiles/sidekiq4.gemfile
-- gemfiles/sidekiq5.gemfile
-- gemfiles/sidekiq6.gemfile
 deploy:
   provider: rubygems
   api_key:
@@ -22,7 +16,3 @@ deploy:
     tags: true
     repo: iMacTia/sidekiq-logstash
     rvm: 2.7
-jobs:
-  exclude:
-    - rvm: 2.4
-      gemfile: gemfiles/sidekiq6.gemfile

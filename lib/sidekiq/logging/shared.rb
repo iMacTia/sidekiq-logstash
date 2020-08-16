@@ -15,8 +15,8 @@ module Sidekiq
       rescue StandardError => e
         begin
           Sidekiq.logger.warn log_job_exception(job, started_at, e)
-        rescue StandardError => ex
-          log_standard_error(job, e, ex)
+        rescue StandardError => e
+          log_standard_error(job, e, e)
         end
         raise
       end
