@@ -21,14 +21,14 @@ jobs:
           ruby-version: 2.7.x
       - name: Install dependencies
         run: bundle install
-      - name: Run tests
+      - name: Run rubocop
         run: bundle exec rubocop --format progress
   build:
     needs: [linting]
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        ruby: ['2.4.x', '2.5.x', '2.6.x', '2.7.x']
+        ruby: ['2.5.x', '2.6.x', '2.7.x']
 
     steps:
       - uses: actions/checkout@v2
