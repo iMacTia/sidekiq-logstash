@@ -3,7 +3,6 @@
 [![Gem Version](https://badge.fury.io/rb/sidekiq-logstash.svg)](https://badge.fury.io/rb/sidekiq-logstash)
 [![GitHub Actions CI](https://github.com/iMacTia/sidekiq-logstash/workflows/CI/badge.svg)](https://github.com/iMacTia/sidekiq-logstash/actions?query=workflow%3ACI)
 
-
 Sidekiq::Logstash turns your [Sidekiq](https://github.com/mperham/sidekiq) log into an organised, aggregated, JSON-syntax log ready to be sent to a logstash server.
 
 ```json
@@ -31,10 +30,11 @@ Sidekiq::Logstash turns your [Sidekiq](https://github.com/mperham/sidekiq) log i
 
 ## Installation
 
-Add this line to your application's Gemfile:
+Add one of the following lines to your application's Gemfile:
 
 ```ruby
-gem 'sidekiq-logstash'
+gem 'sidekiq-logstash', '~> 2.0' # Rails 6
+gem 'sidekiq-logstash', '< 2' # Rails 5 or older
 ```
 
 And then execute:
