@@ -11,5 +11,7 @@ require 'sidekiq/testing'
 require 'rspec'
 require 'forwardable' # needed by rspec-json_expectations
 require 'rspec/json_expectations'
-require 'factory_girl'
-require 'support/factory_girl'
+require 'factory_bot'
+require 'support/factory_bot'
+
+Sidekiq::Logstash.setup

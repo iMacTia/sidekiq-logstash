@@ -1,6 +1,7 @@
 # Sidekiq::Logstash
 
-[![Gem Version](https://badge.fury.io/rb/sidekiq-logstash.svg)](https://badge.fury.io/rb/sidekiq-logstash) [<img src="https://travis-ci.org/iMacTia/sidekiq-logstash.svg?branch=master" alt="version" />](https://travis-ci.org/iMacTia/sidekiq-logstash)
+[![Gem Version](https://badge.fury.io/rb/sidekiq-logstash.svg)](https://badge.fury.io/rb/sidekiq-logstash)
+[![GitHub Actions CI](https://github.com/iMacTia/sidekiq-logstash/workflows/CI/badge.svg)](https://github.com/iMacTia/sidekiq-logstash/actions?query=workflow%3ACI)
 
 
 Sidekiq::Logstash turns your [Sidekiq](https://github.com/mperham/sidekiq) log into an organised, aggregated, JSON-syntax log ready to be sent to a logstash server.

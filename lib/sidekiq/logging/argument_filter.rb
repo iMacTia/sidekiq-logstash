@@ -14,7 +14,7 @@ module Sidekiq
       end
 
       # Filters argument by using the filters provided upon initialization.
-      # @param args [Array] the list of arguments.
+      # @param args [Hash] the list of arguments in a hash with key :args.
       def filter(args)
         compiled_filter.call(args)
       end
