@@ -45,6 +45,12 @@ describe Sidekiq::Logstash do
     expect(buffer.string).not_to include('started')
   end
 
+  it 'stringifies parameters' do
+    hash = { a_really: { deep: { hash: [1, 2] } } }
+    process(SpecWorker, [false, hash])
+    expect(log_message['args'].last).to eq({ 'a_really' => { 'deep' => { 'hash' => %w[1 2] } } })
+  end
+
   context 'with arguments filtered' do
     before do
       Sidekiq::Logstash.configure do |config|
@@ -60,7 +66,7 @@ describe Sidekiq::Logstash do
 
     it 'filter args' do
       process(SpecWorker, [false, { 'a_secret_param' => 'secret' }])
-      expect(log_message['args'].last).to include('[FILTERED]')
+      expect(log_message['args'].last['a_secret_param']).to eq('[FILTERED]')
     end
   end
 
