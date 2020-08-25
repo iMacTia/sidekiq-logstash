@@ -88,11 +88,11 @@ module Sidekiq
         payload['args'][-1] = ENCRYPTED if payload['encrypt']
 
         # Needs to map all args to strings for ElasticSearch compatibility
-        payload['args'].map!(&:to_s)
+        deep_stringify!(payload['args'])
 
         # Needs to map all unique_args to strings for ElasticSearch
         # compatibility in case sidekiq-unique-jobs is used
-        payload['unique_args']&.map!(&:to_s)
+        deep_stringify!(payload['unique_args'])
 
         if payload['retry'].is_a?(Integer)
           payload['max_retries'] = payload['retry']
@@ -123,6 +123,17 @@ module Sidekiq
 
       def filter_args
         Sidekiq::Logstash.configuration.filter_args
+      end
+
+      def deep_stringify!(args)
+        case args
+        when Hash
+          Hash[args.map { |key, value| [deep_stringify!(key), deep_stringify!(value)] }]
+        when Array
+          args.map! { |val| deep_stringify!(val) }
+        else
+          args.to_s
+        end
       end
     end
   end
