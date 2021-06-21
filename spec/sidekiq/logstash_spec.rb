@@ -43,6 +43,15 @@ describe Sidekiq::Logstash do
     expect(buffer.string).to include('[FILTERED]')
   end
 
+  it 'stringifies parameters' do
+    buffer = StringIO.new
+    Sidekiq.logger = Logger.new(buffer)
+
+    job['args'].push(a_really: { deep: { hash: [1, 2] } })
+    Sidekiq::LogstashJobLogger.new.call(job, :default) {}
+    expect(buffer.string).to include('{"a_really"=>{"deep"=>{"hash"=>["1", "2"]}')
+  end
+
   it 'add custom options' do
     Sidekiq::Logstash.configure do |config|
       config.custom_options = lambda do |payload|
