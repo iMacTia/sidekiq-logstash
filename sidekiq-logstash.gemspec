@@ -31,4 +31,5 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency 'rspec', '~> 3.0'
   spec.add_development_dependency 'rspec-json_expectations', '~> 2.1.0'
   spec.add_development_dependency 'rubocop-performance', '~> 1.5'
+  spec.metadata['rubygems_mfa_required'] = 'true'
 end

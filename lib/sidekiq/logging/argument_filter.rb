@@ -63,7 +63,7 @@ module Sidekiq
             parents.push(key) if deep_regexps
             if regexps.any? { |r| key =~ r }
               value = FILTERED
-            elsif deep_regexps && (joined = parents.join('.')) && deep_regexps.any? { |r| joined =~ r }
+            elsif deep_regexps && (joined = parents.join('.')) && deep_regexps.any? { |r| joined =~ r } # rubocop:disable Lint/DuplicateBranch
               value = FILTERED
             elsif value.is_a?(Hash)
               value = call(value, parents)
@@ -71,15 +71,15 @@ module Sidekiq
               value = value.map { |v| v.is_a?(Hash) ? call(v, parents) : v }
             elsif blocks.any?
               key = begin
-                      key.dup
-                    rescue StandardError
-                      key
-                    end
+                key.dup
+              rescue StandardError
+                key
+              end
               value = begin
-                        value.dup
-                      rescue StandardError
-                        value
-                      end
+                value.dup
+              rescue StandardError
+                value
+              end
               blocks.each { |b| b.call(key, value) }
             end
             parents.pop if deep_regexps
