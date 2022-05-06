@@ -100,6 +100,30 @@ describe Sidekiq::Logstash do
     end
   end
 
+  context 'when job raises a error' do
+    it 'logs the exception with job retry' do
+      mock_redis = double(:Redis)
+      allow(Sidekiq).to receive(:redis).and_yield(mock_redis)
+
+      expect(mock_redis).to receive(:zadd).with('retry', any_args).once
+      expect { process(SpecWorker, [true]) }.to raise_error(RuntimeError)
+
+      expect(log_messages.last['error_message']).to eq('You know nothing, Jon Snow.')
+      expect(log_messages.last['error']).to eq('RuntimeError')
+      expect(log_messages.last['error_backtrace'].split("\n").first).to include('workers/spec_worker.rb:7')
+    end
+
+    it 'logs the exception without job retry' do
+      allow(SpecWorker).to receive(:get_sidekiq_options).and_return({ 'retry' => false, 'queue' => 'default' })
+
+      expect { process(SpecWorker, [true]) }.to raise_error(RuntimeError)
+
+      expect(log_messages.last['error_message']).to eq('You know nothing, Jon Snow.')
+      expect(log_messages.last['error']).to eq('RuntimeError')
+      expect(log_messages.last['error_backtrace'].split("\n").first).to include('workers/spec_worker.rb:7')
+    end
+  end
+
   context 'with job_start_log enabled' do
     before do
       Sidekiq::Logstash.configure do |config|
