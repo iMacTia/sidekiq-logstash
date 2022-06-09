@@ -13,8 +13,8 @@ describe Sidekiq::Logstash do
   let(:buffer) { StringIO.new }
   let(:logger) { Logger.new(buffer) }
   let(:job) { build(:job) }
-  let(:processor_options) { { queues: ['default'] } }
-  let(:processor) { ::Sidekiq::Processor.new(nil, processor_options) }
+  let(:processor_options) { Sidekiq }
+  let(:processor) { ::Sidekiq::Processor.new(processor_options) }
   let(:log_message) { JSON.parse(buffer.string) }
   let(:log_messages) { buffer.string.split("\n").map { |log| JSON.parse(log) } }
 
