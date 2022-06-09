@@ -22,8 +22,11 @@ module Sidekiq
     def self.setup(_opts = {})
       # Calls Sidekiq.configure_server to inject logics
       Sidekiq.configure_server do |config|
-        # Remove default Sidekiq error_handler that logs errors
-        config.error_handlers.delete_if { |h| h.is_a?(Sidekiq::ExceptionHandler::Logger) }
+        if defined?(Sidekiq::ExceptionHandler::Logger)
+          # Remove default Sidekiq error_handler that logs errors
+          # NOTE: this only exists up until Sidekiq 6.4.x
+          config.error_handlers.delete_if { |h| h.is_a?(Sidekiq::ExceptionHandler::Logger) }
+        end
 
         # Add logstash support
         config.options[:job_logger] = Sidekiq::LogstashJobLogger
