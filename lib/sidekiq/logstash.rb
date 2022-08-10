@@ -29,7 +29,7 @@ module Sidekiq
         end
 
         # Add logstash support
-        config.options[:job_logger] = Sidekiq::LogstashJobLogger
+        config[:job_logger] = Sidekiq::LogstashJobLogger
 
         # Set custom formatter for Sidekiq logger
         config.logger.formatter = Sidekiq::Logging::LogstashFormatter.new
