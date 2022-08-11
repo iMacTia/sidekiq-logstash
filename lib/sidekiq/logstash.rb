@@ -29,7 +29,13 @@ module Sidekiq
         end
 
         # Add logstash support
-        config[:job_logger] = Sidekiq::LogstashJobLogger
+        if config.respond_to?(:[]=)
+          # Only available from Sidekiq 6.5
+          config[:job_logger] = Sidekiq::LogstashJobLogger
+        else
+          # This is deprecated and will be removed in Sidekiq 7.0
+          config.options[:job_logger] = Sidekiq::LogstashJobLogger
+        end
 
         # Set custom formatter for Sidekiq logger
         config.logger.formatter = Sidekiq::Logging::LogstashFormatter.new
