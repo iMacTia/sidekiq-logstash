@@ -13,16 +13,15 @@ describe Sidekiq::Logstash do
   let(:buffer) { StringIO.new }
   let(:logger) { Logger.new(buffer) }
   let(:job) { build(:job) }
-  let(:processor_options) { Sidekiq }
-  let(:processor) { ::Sidekiq::Processor.new(processor_options) }
+  let(:processor) { ::Sidekiq::Processor.new(Sidekiq.default_configuration.default_capsule) }
   let(:log_message) { JSON.parse(buffer.string) }
   let(:log_messages) { buffer.string.split("\n").map { |log| JSON.parse(log) } }
 
   before do
     logger.formatter = Sidekiq::Logging::LogstashFormatter.new
-    Sidekiq.logger = logger
-    processor_options[:job_logger] = Sidekiq::LogstashJobLogger
-    processor_options[:fetch] = ::Sidekiq::BasicFetch.new(processor_options)
+    Sidekiq.default_configuration.tap do |config|
+      config.logger = logger
+    end
   end
 
   it 'has a version number' do
@@ -102,15 +101,11 @@ describe Sidekiq::Logstash do
 
   context 'when job raises a error' do
     it 'logs the exception with job retry' do
-      mock_redis = double(:Redis)
-      allow(Sidekiq).to receive(:redis).and_yield(mock_redis)
-
-      expect(mock_redis).to receive(:zadd).with('retry', any_args).once
       expect { process(SpecWorker, [true]) }.to raise_error(RuntimeError)
 
-      expect(log_messages.last['error_message']).to eq('You know nothing, Jon Snow.')
-      expect(log_messages.last['error']).to eq('RuntimeError')
-      expect(log_messages.last['error_backtrace'].split("\n").first).to include('workers/spec_worker.rb:7')
+      expect(log_messages[1]['error_message']).to eq('You know nothing, Jon Snow.')
+      expect(log_messages[1]['error']).to eq('RuntimeError')
+      expect(log_messages[1]['error_backtrace'].split("\n").first).to include('workers/spec_worker.rb:7')
     end
 
     it 'logs the exception without job retry' do
@@ -118,9 +113,9 @@ describe Sidekiq::Logstash do
 
       expect { process(SpecWorker, [true]) }.to raise_error(RuntimeError)
 
-      expect(log_messages.last['error_message']).to eq('You know nothing, Jon Snow.')
-      expect(log_messages.last['error']).to eq('RuntimeError')
-      expect(log_messages.last['error_backtrace'].split("\n").first).to include('workers/spec_worker.rb:7')
+      expect(log_messages[0]['error_message']).to eq('You know nothing, Jon Snow.')
+      expect(log_messages[0]['error']).to eq('RuntimeError')
+      expect(log_messages[0]['error_backtrace'].split("\n").first).to include('workers/spec_worker.rb:7')
     end
   end
 
