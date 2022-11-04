@@ -19,7 +19,7 @@ Gem::Specification.new do |spec|
 
   spec.files = `git ls-files -z`.split("\x0").reject { |f| f.match(%r{^(test|spec|features)/}) }
   spec.require_paths = ['lib']
-  spec.required_ruby_version = '>= 2.5.0'
+  spec.required_ruby_version = '>= 2.7.0'
 
   spec.add_dependency 'logstash-event', '~> 1.2'
   spec.add_dependency 'sidekiq', '~> 7.0'

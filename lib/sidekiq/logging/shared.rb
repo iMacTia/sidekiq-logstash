@@ -130,7 +130,7 @@ module Sidekiq
       def deep_stringify!(args)
         case args
         when Hash
-          args.map { |key, value| [deep_stringify!(key), deep_stringify!(value)] }.to_h
+          args.to_h { |key, value| [deep_stringify!(key), deep_stringify!(value)] }
         when Array
           args.map! { |val| deep_stringify!(val) }
         else
