@@ -78,6 +78,10 @@ Sidekiq::Logstash.configure do |config|
   config.custom_options = lambda do |payload|
     payload['my_custom_field'] = 'my_custom_value'
   end
+  
+  # by default, sidekiq-logstash removes the default error handler
+  # to keep it, simply set this to true
+  config.keep_default_error_handler = true
 end
 ```
 
