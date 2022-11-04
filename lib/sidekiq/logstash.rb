@@ -24,7 +24,13 @@ module Sidekiq
       Sidekiq.configure_server do |config|
         # Remove default, noisy error handler,
         # unless LogStash.configuration.keep_default_error_handler is set to true
-        config.error_handlers.delete(Sidekiq::Config::ERROR_HANDLER) unless configuration.keep_default_error_handler
+        unless configuration.keep_default_error_handler
+          config.error_handlers.delete(Sidekiq::Config::ERROR_HANDLER)
+          # Insert a no-op error handler to prevent Sidekiq from logging to STDOUT
+          # because of empty error_handlers (see link).
+          # https://github.com/mperham/sidekiq/blob/02153c17360e712d9a94c08406fe7c057c4d7635/lib/sidekiq/config.rb#L258
+          config.error_handlers << proc {}
+        end
 
         # Add logstash support
         config[:job_logger] = Sidekiq::LogstashJobLogger
