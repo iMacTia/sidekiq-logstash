@@ -22,7 +22,7 @@ Gem::Specification.new do |spec|
   spec.required_ruby_version = '>= 2.5.0'
 
   spec.add_dependency 'logstash-event', '~> 1.2'
-  spec.add_runtime_dependency 'sidekiq', '>= 6.0', '<7'
+  spec.add_dependency 'sidekiq', '~> 7.0'
 
   spec.add_development_dependency 'factory_bot', '~> 6.1'
   spec.add_development_dependency 'rake', '>= 10'

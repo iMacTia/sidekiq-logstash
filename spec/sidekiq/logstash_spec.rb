@@ -13,16 +13,22 @@ describe Sidekiq::Logstash do
   let(:buffer) { StringIO.new }
   let(:logger) { Logger.new(buffer) }
   let(:job) { build(:job) }
-  let(:processor_options) { Sidekiq }
-  let(:processor) { ::Sidekiq::Processor.new(processor_options) }
+  let(:logstash_config) { Sidekiq::Logstash::Configuration.new }
+  let(:sidekiq_config) { Sidekiq::Config.new }
+  let(:processor) { ::Sidekiq::Processor.new(sidekiq_config.default_capsule) }
   let(:log_message) { JSON.parse(buffer.string) }
   let(:log_messages) { buffer.string.split("\n").map { |log| JSON.parse(log) } }
+  let(:mock_redis) { double(:Redis) }
+  let(:custom_config) { nil }
 
   before do
+    # Reset error handlers because they're globally stored across instances of Sidekiq::Config
+    Sidekiq::Config::DEFAULTS[:error_handlers] = []
+    allow(Sidekiq).to receive(:default_configuration).and_return(sidekiq_config)
+    allow(Sidekiq::Logstash).to receive(:configuration).and_return(logstash_config)
     logger.formatter = Sidekiq::Logging::LogstashFormatter.new
-    Sidekiq.logger = logger
-    processor_options[:job_logger] = Sidekiq::LogstashJobLogger
-    processor_options[:fetch] = ::Sidekiq::BasicFetch.new(processor_options)
+    sidekiq_config.logger = logger
+    Sidekiq::Logstash.setup
   end
 
   it 'has a version number' do
@@ -101,16 +107,22 @@ describe Sidekiq::Logstash do
   end
 
   context 'when job raises a error' do
-    it 'logs the exception with job retry' do
-      mock_redis = double(:Redis)
-      allow(Sidekiq).to receive(:redis).and_yield(mock_redis)
+    before do
+      allow(processor.capsule).to receive(:redis)
+    end
 
-      expect(mock_redis).to receive(:zadd).with('retry', any_args).once
+    it 'logs a single line, silencing the default error handler' do
+      expect { process(SpecWorker, [true]) }
+        .to raise_error(RuntimeError)
+        .and not_output.to_stdout
+    end
+
+    it 'logs the exception with job retry' do
       expect { process(SpecWorker, [true]) }.to raise_error(RuntimeError)
 
-      expect(log_messages.last['error_message']).to eq('You know nothing, Jon Snow.')
-      expect(log_messages.last['error']).to eq('RuntimeError')
-      expect(log_messages.last['error_backtrace'].split("\n").first).to include('workers/spec_worker.rb:7')
+      expect(log_message['error_message']).to eq('You know nothing, Jon Snow.')
+      expect(log_message['error']).to eq('RuntimeError')
+      expect(log_message['error_backtrace'].split("\n").first).to include('workers/spec_worker.rb:7')
     end
 
     it 'logs the exception without job retry' do
@@ -118,9 +130,9 @@ describe Sidekiq::Logstash do
 
       expect { process(SpecWorker, [true]) }.to raise_error(RuntimeError)
 
-      expect(log_messages.last['error_message']).to eq('You know nothing, Jon Snow.')
-      expect(log_messages.last['error']).to eq('RuntimeError')
-      expect(log_messages.last['error_backtrace'].split("\n").first).to include('workers/spec_worker.rb:7')
+      expect(log_message['error_message']).to eq('You know nothing, Jon Snow.')
+      expect(log_message['error']).to eq('RuntimeError')
+      expect(log_message['error_backtrace'].split("\n").first).to include('workers/spec_worker.rb:7')
     end
   end
 
@@ -142,6 +154,18 @@ describe Sidekiq::Logstash do
       expect(log_messages.length).to eq(2)
       expect(log_messages.first['job_status']).to eq('started')
       expect(log_messages.last['job_status']).to eq('done')
+    end
+  end
+
+  context 'with keep_default_error_handler' do
+    let(:logstash_config) do
+      Sidekiq::Logstash::Configuration.new.tap do |config|
+        config.keep_default_error_handler = true
+      end
+    end
+
+    it 'leaves the default error handler in place' do
+      expect(sidekiq_config.error_handlers).to include(Sidekiq::Config::ERROR_HANDLER)
     end
   end
 end

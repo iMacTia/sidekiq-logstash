@@ -14,4 +14,4 @@ require 'rspec/json_expectations'
 require 'factory_bot'
 require 'support/factory_bot'
 
-Sidekiq::Logstash.setup
+RSpec::Matchers.define_negated_matcher :not_output, :output
