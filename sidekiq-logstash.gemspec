@@ -24,10 +24,5 @@ Gem::Specification.new do |spec|
   spec.add_dependency 'logstash-event', '~> 1.2'
   spec.add_dependency 'sidekiq', '~> 7.0'
 
-  spec.add_development_dependency 'factory_bot', '~> 6.1'
-  spec.add_development_dependency 'rake', '>= 10'
-  spec.add_development_dependency 'rspec', '~> 3.0'
-  spec.add_development_dependency 'rspec-json_expectations', '~> 2.1.0'
-  spec.add_development_dependency 'rubocop-performance', '~> 1.5'
   spec.metadata['rubygems_mfa_required'] = 'true'
 end
