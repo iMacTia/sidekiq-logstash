@@ -15,7 +15,7 @@ describe Sidekiq::Logstash do
   let(:job) { build(:job) }
   let(:logstash_config) { Sidekiq::Logstash::Configuration.new }
   let(:sidekiq_config) { Sidekiq::Config.new }
-  let(:processor) { ::Sidekiq::Processor.new(sidekiq_config.default_capsule) }
+  let(:processor) { Sidekiq::Processor.new(sidekiq_config.default_capsule) }
   let(:log_message) { JSON.parse(buffer.string) }
   let(:log_messages) { buffer.string.split("\n").map { |log| JSON.parse(log) } }
   let(:mock_redis) { double(:Redis) }

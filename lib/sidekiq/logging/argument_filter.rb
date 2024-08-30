@@ -27,7 +27,7 @@ module Sidekiq
 
       class CompiledFilter # :nodoc:
         def self.compile(filters)
-          return ->(args) { args.dup } if filters.empty?
+          return lambda(&:dup) if filters.empty?
 
           strings = []
           regexps = []

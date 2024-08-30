@@ -4,7 +4,6 @@ require 'sidekiq/logstash/configuration'
 require 'sidekiq/logstash/version'
 require 'sidekiq/logging/logstash_formatter'
 require 'sidekiq/logging/argument_filter'
-require 'sidekiq/logstash_job_logger'
 
 module Sidekiq
   # Main level module for Sidekiq::Logstash.
@@ -22,6 +21,8 @@ module Sidekiq
     def self.setup(_opts = {})
       # Calls Sidekiq.configure_server to inject logics
       Sidekiq.configure_server do |config|
+        require 'sidekiq/logstash_job_logger'
+
         # Remove default, noisy error handler,
         # unless LogStash.configuration.keep_default_error_handler is set to true
         unless configuration.keep_default_error_handler
