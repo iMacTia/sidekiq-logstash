@@ -120,9 +120,17 @@ describe Sidekiq::Logstash do
     it 'logs the exception with job retry' do
       expect { process(SpecWorker, [true]) }.to raise_error(RuntimeError)
 
-      expect(log_message['error_message']).to eq('You know nothing, Jon Snow.')
-      expect(log_message['error']).to eq('RuntimeError')
-      expect(log_message['error_backtrace'].split("\n").first).to include('workers/spec_worker.rb:7')
+      expect(log_message['error']['class']).to eq('Sidekiq::JobRetry::Handled')
+      expect(log_message['error']['message']).to eq('Sidekiq::JobRetry::Handled')
+
+      expect(log_message['error']['cause']['class']).to eq('RuntimeError')
+      expect(log_message['error']['cause']['message']).to eq('You know nothing, Jon Snow.')
+
+      expect(log_message['error']['cause']['cause']['class']).to eq('RuntimeError')
+      expect(log_message['error']['cause']['cause']['message']).to eq('Error rescuing error')
+
+      expect(log_message['error']['cause']['cause']['cause']['class']).to eq('RuntimeError')
+      expect(log_message['error']['cause']['cause']['cause']['message']).to eq('Deepest error')
     end
 
     it 'logs the exception without job retry' do
@@ -130,9 +138,14 @@ describe Sidekiq::Logstash do
 
       expect { process(SpecWorker, [true]) }.to raise_error(RuntimeError)
 
-      expect(log_message['error_message']).to eq('You know nothing, Jon Snow.')
-      expect(log_message['error']).to eq('RuntimeError')
-      expect(log_message['error_backtrace'].split("\n").first).to include('workers/spec_worker.rb:7')
+      expect(log_message['error']['class']).to eq('RuntimeError')
+      expect(log_message['error']['message']).to eq('You know nothing, Jon Snow.')
+
+      expect(log_message['error']['cause']['class']).to eq('RuntimeError')
+      expect(log_message['error']['cause']['message']).to eq('Error rescuing error')
+
+      expect(log_message['error']['cause']['cause']['class']).to eq('RuntimeError')
+      expect(log_message['error']['cause']['cause']['message']).to eq('Deepest error')
     end
   end
 
