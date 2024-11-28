@@ -84,8 +84,7 @@ Sidekiq::Logstash.configure do |config|
   # to keep it, simply set this to true
   config.keep_default_error_handler = true
 
-  # To enable logging of Exception causes,
-  # which provides details about the exception chain,
+  # To enable a log structure that includes details about exception causes,
   # uncomment the following lines:
   #
   # config.log_job_exception_with_causes = true
