@@ -2,7 +2,7 @@
 
 # Utility that allows us to get a hash representation of an exception
 module ExceptionUtils
-  def self.exception_to_hash(exc, parent_backtrace = nil)
+  def self.get_exception_with_cause_hash(exc, parent_backtrace = nil, max_depth_left)
     backtrace = exc.backtrace || []
     if parent_backtrace
       common_lines = backtrace.reverse.zip(parent_backtrace.reverse).take_while { |a, b| a == b }
@@ -16,10 +16,9 @@ module ExceptionUtils
       'backtrace' => backtrace
     }
 
-    cause = exc.cause
-    if cause
+    if (cause = exc.cause) && max_depth_left.positive?
       # Pass the current backtrace as the parent_backtrace to the cause to shorten cause's backtrace list
-      error_hash['cause'] = exception_to_hash(cause, exc.backtrace)
+      error_hash['cause'] = get_exception_with_cause_hash(cause, exc.backtrace, max_depth_left - 1)
     end
 
     error_hash
