@@ -83,6 +83,14 @@ Sidekiq::Logstash.configure do |config|
   # by default, sidekiq-logstash removes the default error handler
   # to keep it, simply set this to true
   config.keep_default_error_handler = true
+
+  # To enable logging of Exception causes,
+  # which provides details about the exception chain,
+  # uncomment the following lines:
+  #
+  # config.log_job_exception_with_causes = true
+  # # To specify the maximum depth of causes to log:
+  # config.causes_logging_max_depth = 3 # Default is 2
 end
 ```
 
