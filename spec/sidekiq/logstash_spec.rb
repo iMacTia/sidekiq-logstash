@@ -120,9 +120,15 @@ describe Sidekiq::Logstash do
     it 'logs the exception with job retry' do
       expect { process(SpecWorker, [true]) }.to raise_error(RuntimeError)
 
-      expect(log_message['error_message']).to eq('You know nothing, Jon Snow.')
       expect(log_message['error']).to eq('RuntimeError')
+      expect(log_message['error_message']).to eq('You know nothing, Jon Snow.')
       expect(log_message['error_backtrace'].split("\n").first).to include('workers/spec_worker.rb:')
+      expect(log_message['error_cause']).to match(
+        hash_including(
+          'class' => 'RuntimeError',
+          'message' => 'Error rescuing error'
+        )
+      )
     end
 
     it 'logs the exception without job retry' do
@@ -130,9 +136,15 @@ describe Sidekiq::Logstash do
 
       expect { process(SpecWorker, [true]) }.to raise_error(RuntimeError)
 
-      expect(log_message['error_message']).to eq('You know nothing, Jon Snow.')
       expect(log_message['error']).to eq('RuntimeError')
+      expect(log_message['error_message']).to eq('You know nothing, Jon Snow.')
       expect(log_message['error_backtrace'].split("\n").first).to include('workers/spec_worker.rb:')
+      expect(log_message['error_cause']).to match(
+        hash_including(
+          'class' => 'RuntimeError',
+          'message' => 'Error rescuing error'
+        )
+      )
     end
 
     context 'log_job_exception_with_causes enabled' do
