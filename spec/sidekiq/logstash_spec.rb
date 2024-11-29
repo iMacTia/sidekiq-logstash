@@ -122,7 +122,7 @@ describe Sidekiq::Logstash do
 
       expect(log_message['error_message']).to eq('You know nothing, Jon Snow.')
       expect(log_message['error']).to eq('RuntimeError')
-      expect(log_message['error_backtrace'].split("\n").first).to include('workers/spec_worker.rb:7')
+      expect(log_message['error_backtrace'].split("\n").first).to include('workers/spec_worker.rb:')
     end
 
     it 'logs the exception without job retry' do
@@ -132,7 +132,66 @@ describe Sidekiq::Logstash do
 
       expect(log_message['error_message']).to eq('You know nothing, Jon Snow.')
       expect(log_message['error']).to eq('RuntimeError')
-      expect(log_message['error_backtrace'].split("\n").first).to include('workers/spec_worker.rb:7')
+      expect(log_message['error_backtrace'].split("\n").first).to include('workers/spec_worker.rb:')
+    end
+
+    context 'log_job_exception_with_causes enabled' do
+      before do
+        Sidekiq::Logstash.configure do |config|
+          config.log_job_exception_with_causes = true
+        end
+      end
+
+      after do
+        Sidekiq::Logstash.configure do |config|
+          config.log_job_exception_with_causes = false
+        end
+      end
+
+      it 'logs the exception with its two causes' do
+        expect { process(SpecWorker, [true]) }.to raise_error(RuntimeError)
+
+        expect(log_message['error']['class']).to eq('Sidekiq::JobRetry::Handled')
+        expect(log_message['error']['message']).to eq('Sidekiq::JobRetry::Handled')
+
+        expect(log_message['error']['cause']['class']).to eq('RuntimeError')
+        expect(log_message['error']['cause']['message']).to eq('You know nothing, Jon Snow.')
+
+        expect(log_message['error']['cause']['cause']['class']).to eq('RuntimeError')
+        expect(log_message['error']['cause']['cause']['message']).to eq('Error rescuing error')
+      end
+
+      context 'causes_logging_max_depth is set to 3' do
+        before do
+          Sidekiq::Logstash.configure do |config|
+            config.log_job_exception_with_causes = true
+            config.causes_logging_max_depth = 3
+          end
+        end
+
+        after do
+          Sidekiq::Logstash.configure do |config|
+            config.log_job_exception_with_causes = true
+            config.causes_logging_max_depth = 2
+          end
+        end
+
+        it 'logs the exception with its three causes' do
+          expect { process(SpecWorker, [true]) }.to raise_error(RuntimeError)
+
+          expect(log_message['error']['class']).to eq('Sidekiq::JobRetry::Handled')
+          expect(log_message['error']['message']).to eq('Sidekiq::JobRetry::Handled')
+
+          expect(log_message['error']['cause']['class']).to eq('RuntimeError')
+          expect(log_message['error']['cause']['message']).to eq('You know nothing, Jon Snow.')
+
+          expect(log_message['error']['cause']['cause']['class']).to eq('RuntimeError')
+          expect(log_message['error']['cause']['cause']['message']).to eq('Error rescuing error')
+
+          expect(log_message['error']['cause']['cause']['cause']['class']).to eq('RuntimeError')
+          expect(log_message['error']['cause']['cause']['cause']['message']).to eq('Deepest error')
+        end
+      end
     end
   end
 

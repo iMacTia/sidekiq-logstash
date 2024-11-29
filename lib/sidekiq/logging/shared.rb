@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require 'sidekiq/exception_utils'
+
 module Sidekiq
   module Logging
     # Shared module with all the logics used by job loggers.
@@ -50,10 +52,15 @@ module Sidekiq
         payload['message'] += ": fail: #{payload['duration']} sec"
         payload['job_status'] = 'fail'
 
-        exc = exc.cause || exc if exc.is_a? Sidekiq::JobRetry::Handled
-        payload['error_message'] = exc.message
-        payload['error'] = exc.class
-        payload['error_backtrace'] = %('#{exc.backtrace.join("\n")}')
+        config = Sidekiq::Logstash.configuration
+        if config.log_job_exception_with_causes
+          payload['error'] = ExceptionUtils.get_exception_with_cause_hash(exc, config.causes_logging_max_depth)
+        else
+          exc = exc.cause || exc if exc.is_a? Sidekiq::JobRetry::Handled
+          payload['error_message'] = exc.message
+          payload['error'] = exc.class
+          payload['error_backtrace'] = %('#{exc.backtrace.join("\n")}')
+        end
 
         process_payload(payload)
       end
