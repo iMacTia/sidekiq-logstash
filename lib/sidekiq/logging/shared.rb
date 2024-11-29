@@ -54,7 +54,9 @@ module Sidekiq
 
         config = Sidekiq::Logstash.configuration
         if config.log_job_exception_with_causes
-          payload['error'] = ExceptionUtils.get_exception_with_cause_hash(exc, max_depth_left: config.causes_logging_max_depth)
+          payload['error'] = ExceptionUtils.get_exception_with_cause_hash(
+            exc, max_depth_left: config.causes_logging_max_depth
+          )
         else
           exc = exc.cause || exc if exc.is_a? Sidekiq::JobRetry::Handled
           payload['error_message'] = exc.message

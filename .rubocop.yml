@@ -13,6 +13,9 @@ Metrics/BlockLength:
   Exclude:
     - spec/**/*.rb
 
+Metrics/ModuleLength:
+  Enabled: false 
+
 Layout/LineLength:
   Max: 120
   Exclude:
