@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require 'sidekiq/exception_utils'
+require 'sidekiq/logging/exception_utils'
 
 module Sidekiq
   module Logging
@@ -54,7 +54,7 @@ module Sidekiq
 
         config = Sidekiq::Logstash.configuration
         if config.log_job_exception_with_causes
-          payload['error'] = ExceptionUtils.get_exception_with_cause_hash(
+          payload['error'] = Sidekiq::Logging::ExceptionUtils.get_exception_with_cause_hash(
             exc, max_depth_left: config.causes_logging_max_depth
           )
         else
@@ -66,7 +66,7 @@ module Sidekiq
             payload['error_cause'] = {
               'class' => cause.class.to_s,
               'message' => cause.message,
-              'backtrace' => ExceptionUtils.backtrace_for(cause, exc.backtrace)
+              'backtrace' => Sidekiq::Logging::ExceptionUtils.backtrace_for(cause, exc.backtrace)
             }
           end
         end
