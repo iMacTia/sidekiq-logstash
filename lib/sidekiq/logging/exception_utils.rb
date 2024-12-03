@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
-# Utility that allows us to get a hash representation of an exception
 module Sidekiq
   module Logging
+    # Utility that allows us to get a hash representation of an exception
     module ExceptionUtils
       module_function
 
