@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require 'sidekiq/exception_utils'
+require 'sidekiq/logging/exception_utils'
 
 module Sidekiq
   module Logging
