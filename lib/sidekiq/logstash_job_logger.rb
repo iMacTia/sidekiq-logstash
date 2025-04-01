@@ -8,8 +8,8 @@ module Sidekiq
   class LogstashJobLogger < ::Sidekiq::JobLogger
     include Sidekiq::Logging::Shared
 
-    def call(job, _queue, &block)
-      log_job(job, &block)
+    def call(job, _queue, &)
+      log_job(job, &)
     end
   end
 end

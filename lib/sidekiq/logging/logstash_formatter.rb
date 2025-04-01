@@ -7,7 +7,7 @@ module Sidekiq
     # Class that takes a log payload and format it to be Logstash-compatible.
     class LogstashFormatter
       def call(severity, _time, _progname, data)
-        json_data = { severity: severity }
+        json_data = { severity: }
 
         if data.is_a? Hash
           json_data.merge!(data)
