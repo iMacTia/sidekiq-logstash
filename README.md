@@ -33,7 +33,7 @@ Sidekiq::Logstash turns your [Sidekiq](https://github.com/mperham/sidekiq) log i
 Add one of the following lines to your application's Gemfile:
 
 ```ruby
-gem 'sidekiq-logstash', '~> 3.0' # Sidekiq 7
+gem 'sidekiq-logstash', '~> 3.0' # Sidekiq 7 or 8
 gem 'sidekiq-logstash', '~> 2.0' # Sidekiq 6
 gem 'sidekiq-logstash', '< 2' # Sidekiq 5 or older
 ```
