@@ -2,6 +2,6 @@
 
 module Sidekiq
   module Logstash
-    VERSION = '4.0.0'
+    VERSION = '3.3.0'
   end
 end
