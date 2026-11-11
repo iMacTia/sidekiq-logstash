@@ -21,6 +21,7 @@ Gem::Specification.new do |spec|
   spec.require_paths = ['lib']
   spec.required_ruby_version = '>= 3.2.0'
 
+  spec.add_dependency 'json', '>= 2', '< 4'
   spec.add_dependency 'logstash-event', '~> 1.2'
   spec.add_dependency 'sidekiq', '~> 8.0'
 
