@@ -79,7 +79,7 @@ module Sidekiq
       def setup_payload(job)
         # Create a copy of the payload using JSON
         # This should always be possible since Sidekiq store it in Redis
-        payload = JSON.parse(JSON.unparse(job))
+        payload = JSON.parse(JSON.generate(job))
 
         # Convert timestamps into Time instances
         %w[created_at enqueued_at retried_at failed_at completed_at].each do |key|
