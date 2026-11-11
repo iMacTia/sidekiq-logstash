@@ -23,6 +23,7 @@ Gem::Specification.new do |spec|
 
   spec.add_dependency 'logstash-event', '~> 1.2'
   spec.add_dependency 'sidekiq', '~> 8.0'
+  spec.add_dependency 'json', '>= 2', '< 4'
 
   spec.metadata['rubygems_mfa_required'] = 'true'
 end
